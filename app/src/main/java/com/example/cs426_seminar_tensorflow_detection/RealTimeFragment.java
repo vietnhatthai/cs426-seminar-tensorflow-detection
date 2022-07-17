@@ -42,6 +42,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
     private Bitmap rgbBitmapForCameraImage;
     private boolean computing = false;
     private Matrix imageTransformMatrix;
+    private long fps = 0;
 
     private OverlayView overlayView;
 
@@ -49,7 +50,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
     private Runnable runInBackground;
 
     private static final int PERMISSIONS_REQUEST = 1;
-
+    
     Handler handler;
 
     public RealTimeFragment() {
@@ -106,12 +107,12 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
             Date currentTime = Calendar.getInstance().getTime();
             final List<DetectionResult> results = objectDetector.detectObjects(imageBitmapForModel);
 
-            overlayView.setResults(results, 0);
+            overlayView.setResults(results, fps);
             requestRender();
             Date endTime = Calendar.getInstance().getTime();
             // calc fps
             long diff = endTime.getTime() - currentTime.getTime();
-            long fps = 1000 / diff;
+            fps = 1000 / diff;
             Log.i(LOGGING_TAG, String.format("FPS: %d", fps));
 
             computing = false;
