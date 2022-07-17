@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_samples"
+        android:icon="@drawable/ic_baseline_image_24"
+        android:title="@string/samples"/>
+    <item
+        android:id="@+id/navigation_attachment"
+        android:icon="@drawable/ic_baseline_attachment_24"
+        android:title="@string/attachment" />
+
+    <item
+        android:id="@+id/navigation_realtime"
+        android:icon="@drawable/ic_baseline_live_tv_24"
+        android:title="@string/real_time" />
+</menu>

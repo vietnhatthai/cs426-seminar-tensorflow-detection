@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">cs426-seminar-tensorflow-detection</string>
+    <string name="samples">Samples</string>
+    <string name="attachment">Attachments</string>
+    <string name="real_time">Real Time</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="welcome_message">Welcome to Project</string>
+    <string name="instructionMessage">Please select default image or take a photo</string>
+
+    <string name="request_permission">This sample needs camera permission.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+</resources>

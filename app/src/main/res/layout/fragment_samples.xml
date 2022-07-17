@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SamplesFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="650dp">
+
+        <FrameLayout
+            android:id="@+id/frameLayoutID"
+            android:layout_width="match_parent"
+            android:layout_height="400dp">
+
+            <TextView
+                android:id="@+id/welcomeMessageTVID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/welcome_message"
+                android:textAlignment="center"
+                />
+            <ImageView
+                android:id="@+id/imageViewID"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="TODO" />
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/llSampleImage"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/instructionMessage"
+            android:textAlignment="center"
+            android:textSize="17.5sp" />
+
+        <LinearLayout
+            android:id="@+id/llSampleImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/captureImageButton"
+            android:layout_marginBottom="20dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <ImageView
+                android:id="@+id/sampleImage1"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/image_test" />
+
+            <ImageView
+                android:id="@+id/sampleImage2"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop"
+                android:src="@drawable/kite"
+                tools:ignore="ImageContrastCheck,ImageContrastCheck" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/captureImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="161dp"
+            android:layout_marginEnd="162dp"
+            android:layout_marginBottom="20dp"
+            android:text="Take photo"
+            android:textAlignment="center"/>
+    </RelativeLayout>
+
+</FrameLayout>
