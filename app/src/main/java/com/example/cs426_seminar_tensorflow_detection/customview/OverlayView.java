@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
@@ -61,6 +62,7 @@ public class OverlayView extends View {
             }
         }
         if (fps > 0) {
+            Log.d("Draw FPS", String.format("%d", 1000 / fps));
             paint.setColor(Color.RED);
             paint.setStyle(Paint.Style.FILL_AND_STROKE);
             canvas.drawText(String.format("%d FPS", fps), 50, 100, paint);

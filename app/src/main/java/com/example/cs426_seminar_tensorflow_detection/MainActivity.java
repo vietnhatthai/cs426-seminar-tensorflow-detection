@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
                     // Toast.makeText(getApplicationContext(), "Realtime", Toast.LENGTH_SHORT).show();
 //                    getSupportFragmentManager()
 //                            .beginTransaction()
-//                            .replace(R.id.frame_container, new RealTimeFragment())
+//                            .add(R.id.frame_container, new RealTimeFragment())
 //                            .commit();
                     MainCameraActivity activity = MainCameraActivity.getInstance();
                     startActivity(new Intent(getApplicationContext(), activity.getClass()));

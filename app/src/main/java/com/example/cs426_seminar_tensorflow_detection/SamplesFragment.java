@@ -40,8 +40,8 @@ public class SamplesFragment extends Fragment {
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private static final int CAMERA_REQUEST = 1888;
 
-    private ObjectDetector detector;
-    ObjectDetector.ObjectDetectorOptions options;
+    private ObjectDetector detector;        // Object detector
+    private ObjectDetector.ObjectDetectorOptions options; // Object detector options
 
     public SamplesFragment() {
 
@@ -80,6 +80,7 @@ public class SamplesFragment extends Fragment {
             }
         });
 
+        // Click on sample image 2
         sampleImage2.setOnClickListener(v -> {
             try{
                 setViewAndDetect(getSampleImage(R.drawable.kite));
@@ -88,7 +89,8 @@ public class SamplesFragment extends Fragment {
                 e.printStackTrace();
             }
         });
-        // Init button when being clicked
+
+        // Click on capture image button
         captureImageButton.setOnClickListener(v -> {
             Toast.makeText(requireContext(), "Taking a photo", Toast.LENGTH_LONG).show();
             if (requireActivity().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
@@ -108,12 +110,12 @@ public class SamplesFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            Bitmap photo = (Bitmap) data.getExtras().get("data"); //get the image from the camera
             // resize the image to fit the image view
             photo = Bitmap.createScaledBitmap(photo, inputImageView.getWidth(), inputImageView.getHeight(), false);
 
             try {
-                runObjectDetection(photo);
+                runObjectDetection(photo); // run the object detection on the photo
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -123,71 +125,66 @@ public class SamplesFragment extends Fragment {
     private void load_model() throws IOException {
         // initialize the detector object
         options = ObjectDetector.ObjectDetectorOptions.builder()
-                .setMaxResults(100)
-                .setScoreThreshold(0.35f)
-                .build();
+                .setMaxResults(5)          // set the maximum number of results to return
+                .setScoreThreshold(0.35f)  // set the minimum score threshold for the results to be returned
+                .build();                  // build the options
 
         // Load model
         detector = ObjectDetector.createFromFileAndOptions(
                 requireActivity(),
-                "android.tflite",
+                "voc2007.tflite",     // path to the model file
                 options);
     }
 
     private void setViewAndDetect(Bitmap bitmap) throws IOException {
         // Display captured image
-        inputImageView.setImageBitmap(bitmap);
-        tvPlaceHolder.setVisibility(View.INVISIBLE);
+        inputImageView.setImageBitmap(bitmap); // set the image view with the captured image
+        tvPlaceHolder.setVisibility(View.INVISIBLE); // hide the placeholder text view
         try {
-            runObjectDetection(bitmap);
+            runObjectDetection(bitmap);     // run object detection on the image
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void runObjectDetection(Bitmap bitmap) throws IOException {
-        // Step 1: convert bitmap image to tensor image
+        // convert bitmap image to tensor image
         TensorImage image = TensorImage.fromBitmap(bitmap);
+        List<Detection> results = detector.detect(image);       // detect the objects in the image
+        Bitmap outputBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true); // create a copy of the original image
+        Canvas canvas = new Canvas(outputBitmap);   // create a canvas to draw on the image
+        Paint pen = new Paint();                    // create a paint object to draw on the canvas
+        pen.setTextAlign(Paint.Align.LEFT);         // set the text alignment to left
 
-        List<Detection> results = detector.detect(image);
+        for (Detection result: results){    // for each result
+            pen.setColor(Color.RED);                // set the color of the text to red
+            pen.setStrokeWidth(8F);                 // set the stroke width to 8 pixels
+            pen.setStyle(Paint.Style.STROKE);       // set the style to stroke
+            RectF box = result.getBoundingBox();    // get the bounding box of the object
+            canvas.drawRect(box, pen);              // draw the bounding box on the canvas
 
-        Bitmap outputBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+            Rect tagSize = new Rect(0, 0, 0, 0);    // create a rectangle to store the size of the text
+            Category category = result.getCategories().get(0);           // get the category of the object
+            String text = category.getLabel() + " "  + Math.round(category.getScore()*100) + "%";   // create the text to be drawn
 
-        Canvas canvas = new Canvas(outputBitmap);
-        Paint pen = new Paint();
-        pen.setTextAlign(Paint.Align.LEFT);
-
-        for (Detection result: results){
-            pen.setColor(Color.RED);
-            pen.setStrokeWidth(8F);
-            pen.setStyle(Paint.Style.STROKE);
-            RectF box = result.getBoundingBox();
-            canvas.drawRect(box, pen);
-
-            Rect tagSize = new Rect(0, 0, 0, 0);
-
-            pen.setStyle(Paint.Style.FILL_AND_STROKE);
-            pen.setColor(Color.YELLOW);
-            pen.setStrokeWidth(2F);
-
-            Category category = result.getCategories().get(0);
-            String text = category.getLabel() + " "  + Math.round(category.getScore()*100) + "%";
-
-            pen.setTextSize(96F);
-            pen.getTextBounds(text, 0, text.length(), tagSize);
-
-            canvas.drawText(
-                    text, box.left,
-                    box.top, pen
-            );
+            pen.setTextSize(96F);                   // set the text size to 96 pixels
+            pen.getTextBounds(text, 0, text.length(), tagSize);     // get the size of the text
+            // fill background of the text
+            pen.setColor(Color.WHITE);              // set the color of the text to white
+            pen.setStyle(Paint.Style.FILL_AND_STROKE);      // set the style to fill and stroke
+            // draw the background of the text
+            canvas.drawRect(box.left, box.top - tagSize.height(), box.left + tagSize.width(), box.top, pen);
+            pen.setColor(Color.RED);                // set the color of the text to red
+            pen.setStrokeWidth(2F);                 // set the stroke width to 2 pixels
+            canvas.drawText(text, box.left, box.top, pen);  // draw the text on the canvas
         }
-        inputImageView.setImageBitmap(outputBitmap);
+        inputImageView.setImageBitmap(outputBitmap);    // display the output image on the image view
     }
 
     private Bitmap getSampleImage(int resID) {
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inMutable = true;
-        return BitmapFactory.decodeResource(getResources(), resID, options);
+        final BitmapFactory.Options options = new BitmapFactory.Options();  //  create a new options object
+        options.inMutable = true;   // set the options to be mutable
+        return BitmapFactory.decodeResource(getResources(), resID, options); // decode the resource into a bitmap
     }
 
     @Override
@@ -199,8 +196,8 @@ public class SamplesFragment extends Fragment {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
             {
                 Toast.makeText(requireContext(), "camera permission granted", Toast.LENGTH_LONG).show();
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); // create a new intent to capture an image
+                startActivityForResult(cameraIntent, CAMERA_REQUEST);       // start the camera activity
             }
             else
             {

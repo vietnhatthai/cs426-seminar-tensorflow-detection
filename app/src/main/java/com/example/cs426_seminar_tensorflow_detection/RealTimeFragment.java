@@ -50,6 +50,8 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
 
     private static final int PERMISSIONS_REQUEST = 1;
 
+    private long fps = 0;
+
     Handler handler;
 
     public RealTimeFragment() {
@@ -105,13 +107,13 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
 
             Date currentTime = Calendar.getInstance().getTime();
             final List<DetectionResult> results = objectDetector.detectObjects(imageBitmapForModel);
-
-            overlayView.setResults(results, 0);
+            Log.d("Results", "Length: " + results.size());
+            overlayView.setResults(results, fps);
             requestRender();
             Date endTime = Calendar.getInstance().getTime();
             // calc fps
             long diff = endTime.getTime() - currentTime.getTime();
-            long fps = 1000 / diff;
+            fps = 1000 / diff;
             Log.i(LOGGING_TAG, String.format("FPS: %d", fps));
 
             computing = false;
@@ -141,7 +143,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
 
         getChildFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, cameraConnectionFragment, null)
+                .add(R.id.container, cameraConnectionFragment, null)
                 .commit();
     }
 
@@ -211,7 +213,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
     }
 
     public void requestRender() {
-        OverlayView overlay = (OverlayView) requireActivity().findViewById(R.id.overlay);
+        OverlayView overlay = requireActivity().findViewById(R.id.overlay);
         overlay.postInvalidate();
     }
 

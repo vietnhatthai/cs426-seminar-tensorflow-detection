@@ -111,6 +111,7 @@ public class MainCameraActivity extends CameraActivity implements OnImageAvailab
         runInBackground(() -> {
             Date currentTime = Calendar.getInstance().getTime();
             final List<DetectionResult> results = objectDetector.detectObjects(imageBitmapForModel);
+            Log.d("Results", "Length: " + results.size());
             overlayView.setResults(results, fps);
             requestRender();
             Date endTime = Calendar.getInstance().getTime();

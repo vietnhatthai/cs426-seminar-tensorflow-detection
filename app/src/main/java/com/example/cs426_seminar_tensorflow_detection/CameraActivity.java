@@ -1,6 +1,7 @@
 package com.example.cs426_seminar_tensorflow_detection;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.ImageReader.OnImageAvailableListener;
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.cs426_seminar_tensorflow_detection.customview.OverlayView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+// https://github.com/mrinalTheCoder/ObjectDetectionApp
 public abstract class CameraActivity extends AppCompatActivity implements OnImageAvailableListener {
     private static final String LOGGING_TAG = "objdetector";
     private static final int PERMISSIONS_REQUEST = 1;
@@ -25,6 +27,7 @@ public abstract class CameraActivity extends AppCompatActivity implements OnImag
     private Handler handler;
     private HandlerThread handlerThread;
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(null);
