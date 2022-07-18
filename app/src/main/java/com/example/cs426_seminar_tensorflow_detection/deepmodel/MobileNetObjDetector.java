@@ -40,7 +40,7 @@ public class MobileNetObjDetector {
     private float[][] outputClasses;
     private float[][] outputScores;
     private float[] numDetections;
-    private Vector<String> labels = new Vector<String>();
+    private Vector<String> labels = new Vector<>();
 
     private MobileNetObjDetector(final AssetManager assetManager) throws IOException {
         init(assetManager);
@@ -68,18 +68,18 @@ public class MobileNetObjDetector {
             Log.i(LOGGING_TAG, "Input tensor shapes:");
             for (int i=0; i<tfLite.getInputTensorCount(); i++) {
                 int[] shape = tfLite.getInputTensor(i).shape();
-                String stringShape = "";
-                for(int j = 0; j < shape.length; j++) {
-                    stringShape = stringShape + ", " + shape[j];
+                StringBuilder stringShape = new StringBuilder();
+                for (int k : shape) {
+                    stringShape.append(", ").append(k);
                 }
                 Log.i(LOGGING_TAG, "Shape of input tensor " + i + ": " + stringShape);
             }
             Log.i(LOGGING_TAG, "Output tensor shapes:");
             for (int i=0; i<tfLite.getOutputTensorCount(); i++) {
                 int[] shape = tfLite.getOutputTensor(i).shape();
-                String stringShape = "";
-                for(int j = 0; j < shape.length; j++) {
-                    stringShape = stringShape + ", " + shape[j];
+                StringBuilder stringShape = new StringBuilder();
+                for (int k : shape) {
+                    stringShape.append(", ").append(k);
                 }
                 Log.i(LOGGING_TAG, "Shape of output tensor " + i + ": " + tfLite.getOutputTensor(i).name() + " " + stringShape);
             }
@@ -108,7 +108,7 @@ public class MobileNetObjDetector {
         tfLite.close();
     }
 
-    public List<DetectionResult> detectObjects(final Bitmap bitmap) throws IOException{
+    public List<DetectionResult> detectObjects(final Bitmap bitmap) {
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 
         imgData.rewind();

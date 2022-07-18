@@ -61,7 +61,6 @@ public class CameraConnectionFragment extends Fragment {
     private static final Size DESIRED_PREVIEW_SIZE = new Size(screenWidth, screenHeight);
 
     private static final int MINIMUM_PREVIEW_SIZE = 500;
-    private static final String FRAGMENT_DIALOG = "dialog";
     private final Semaphore cameraOpenCloseLock = new Semaphore(1);
     private OnImageAvailableListener imageListener;
     private ConnectionListener cameraConnectionListener;
@@ -148,8 +147,8 @@ public class CameraConnectionFragment extends Fragment {
         Log.i(LOGGING_TAG, "Min size: " + minSize);
 
         // Collect the supported resolutions that are at least as big as the preview Surface
-        final List<Size> bigEnough = new ArrayList();
-        final List<Size> tooSmall = new ArrayList<Size>();
+        final List<Size> bigEnough = new ArrayList<>();
+        final List<Size> tooSmall = new ArrayList<>();
         for (final Size option : choices) {
             if (option.equals(DESIRED_PREVIEW_SIZE)) {
                 return DESIRED_PREVIEW_SIZE;
@@ -181,7 +180,7 @@ public class CameraConnectionFragment extends Fragment {
     }
 
     private void setUpCameraOutputs() {
-        final CameraManager manager = (CameraManager) getActivity().getSystemService(Context.CAMERA_SERVICE);
+        final CameraManager manager = (CameraManager) requireActivity().getSystemService(Context.CAMERA_SERVICE);
         try {
             for (final String cameraId : manager.getCameraIdList()) {
                 final CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
@@ -222,8 +221,6 @@ public class CameraConnectionFragment extends Fragment {
         } catch (final CameraAccessException ex) {
             Log.e(LOGGING_TAG, "Exception: " + ex.getMessage());
         } catch (final NullPointerException ex) {
-//            ErrorDialog.newInstance(getString(R.string.camera_error))
-//                    .show(getChildFragmentManager(), FRAGMENT_DIALOG);
             throw new RuntimeException(getString(R.string.camera_error));
         }
 
@@ -233,7 +230,7 @@ public class CameraConnectionFragment extends Fragment {
     private void openCamera(final int width, final int height) {
         setUpCameraOutputs();
         configureTransform(width, height);
-        final Activity activity = getActivity();
+        final Activity activity = requireActivity();
 
         final CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
         try {
@@ -335,8 +332,8 @@ public class CameraConnectionFragment extends Fragment {
             previewRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             previewRequestBuilder.addTarget(surface);
 
-            Log.i(LOGGING_TAG, String.format("Opening camera preview: "
-                    + previewSize.getWidth() + "x" + previewSize.getHeight()));
+            Log.i(LOGGING_TAG, "Opening camera preview: "
+                    + previewSize.getWidth() + "x" + previewSize.getHeight());
 
             // Create the reader for the preview frames.
             previewReader = ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(),
@@ -419,11 +416,10 @@ public class CameraConnectionFragment extends Fragment {
     }
 
     private void fixDeviceCameraOrientation(CaptureRequest.Builder previewRequestBuilder) {
-        final int deviceRotation = getActivity().getWindowManager().getDefaultDisplay().getRotation();
+        final int deviceRotation = requireActivity().getWindowManager().getDefaultDisplay().getRotation();
         int jpegOrientation =
                 (ORIENTATIONS.get(deviceRotation) + sensorOrientation + 270) % 360;
         previewRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, jpegOrientation);
-
     }
 
     static class CompareSizesByArea implements Comparator<Size> {

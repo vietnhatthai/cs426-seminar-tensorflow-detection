@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.util.Size;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,8 +64,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_real_time, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_real_time, container, false);
     }
 
     @Override
@@ -106,7 +104,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
 
         runInBackground = () -> {
             Date currentTime = Calendar.getInstance().getTime();
-            List<DetectionResult> results = null;
+            List<DetectionResult> results;
             try {
                 results = objectDetector.detectObjects(imageBitmapForModel);
                 overlayView.setResults(results, fps);
@@ -150,9 +148,6 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
     }
 
     protected void onPreviewSizeChosen(final Size previewSize, final int rotation) {
-        float TEXT_SIZE_DIP = 10;
-        final float textSizePx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                TEXT_SIZE_DIP, requireContext().getResources().getDisplayMetrics());
 
         try {
             objectDetector = MobileNetObjDetector.create(requireActivity().getAssets());
@@ -163,7 +158,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
             Toast.makeText(requireActivity().getApplicationContext(), "MobileNetObjDetector could not be created", Toast.LENGTH_SHORT).show();
         }
 
-        overlayView = (OverlayView) requireActivity().findViewById(R.id.overlay);
+        overlayView = requireActivity().findViewById(R.id.overlay);
 
         int screenOrientation = requireActivity().getWindowManager().getDefaultDisplay().getRotation();
         //Sensor orientation: 90, Screen orientation: 0
@@ -187,8 +182,8 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
     }
 
     @Override
-    public void onRequestPermissionsResult(final int requestCode, final String[] permissions,
-                                           final int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
+                                           @NonNull final int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED
