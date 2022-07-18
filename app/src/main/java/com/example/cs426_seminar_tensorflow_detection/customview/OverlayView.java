@@ -5,13 +5,15 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.example.cs426_seminar_tensorflow_detection.deepmodel.DetectionResult;
+import org.tensorflow.lite.support.label.Category;
+import org.tensorflow.lite.task.vision.detector.Detection;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,18 +22,17 @@ import java.util.List;
 public class OverlayView extends View {
     private static int INPUT_SIZE = 300;
 
-    private final Paint paint;
+    private final Paint pen;
     private final List<DrawCallback> callbacks = new LinkedList();
-    private List<DetectionResult> results;
-    private float resultsViewHeight;
+    private List<Detection> results;
+    private final float resultsViewHeight;
     private long fps = 0;
 
     public OverlayView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
-        paint = new Paint();
-        paint.setColor(Color.RED);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+        pen = new Paint();
+        pen.setTextAlign(Paint.Align.LEFT);
+        pen.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 20, getResources().getDisplayMetrics()));
         resultsViewHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 112, getResources().getDisplayMetrics());
@@ -41,32 +42,39 @@ public class OverlayView extends View {
         callbacks.add(callback);
     }
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint({"DefaultLocale", "DrawAllocation"})
     @Override
     public synchronized void onDraw(final Canvas canvas) {
         for (final DrawCallback callback : callbacks) {
             callback.drawCallback(canvas);
         }
         if (results != null) {
-            for (int i = 0; i < results.size(); i++) {
-                if (results.get(i).getConfidence() > 0.5) {
-                    RectF box = reCalcSize(results.get(i).getLocation());
-                    String title = results.get(i).getTitle() + String.format(" %2.2f", results.get(i).getConfidence()*100) + "%";
-                    Log.d("OverlayView", "title: " + title);
-                    paint.setColor(Color.RED);
-                    paint.setStyle(Paint.Style.STROKE);
-                    canvas.drawRect(box, paint);
-                    paint.setStrokeWidth(2.0f);
-                    paint.setStyle(Paint.Style.FILL_AND_STROKE);
-                    canvas.drawText(title, box.left, box.top, paint);
+                for (Detection result: results) {    // for each result
+                    RectF box = reCalcSize(result.getBoundingBox());
+                    Category category = result.getCategories().get(0);
+                    String text = category.getLabel() + " "  + Math.round(category.getScore()*100) + "%";
+
+                    pen.setColor(Color.RED);
+                    pen.setStrokeWidth(8F);
+                    pen.setStyle(Paint.Style.STROKE);
+                    canvas.drawRect(box, pen);
+
+                    Rect tagSize = new Rect(0, 0, 0, 0);
+                    pen.setTextSize(96F);
+                    pen.getTextBounds(text, 0, text.length(), tagSize);
+                    pen.setColor(Color.WHITE);
+                    pen.setStyle(Paint.Style.FILL_AND_STROKE);
+                    canvas.drawRect(box.left, box.top - tagSize.height(), box.left + tagSize.width(), box.top, pen);
+                    pen.setColor(Color.RED);
+                    pen.setStrokeWidth(2F);
+                    canvas.drawText(text, box.left, box.top, pen);
                 }
-            }
         }
         if (fps > 0) {
             Log.d("FPS", String.format("%d", 1000 / fps));
-            paint.setColor(Color.RED);
-            paint.setStyle(Paint.Style.FILL_AND_STROKE);
-            canvas.drawText(String.format("%d FPS", fps), 50, 100, paint);
+            pen.setColor(Color.RED);
+            pen.setStyle(Paint.Style.FILL_AND_STROKE);
+            canvas.drawText(String.format("%d FPS", fps), 50, 100, pen);
         }
     }
 
@@ -74,12 +82,12 @@ public class OverlayView extends View {
         invalidate();
     }
 
-    public void setResults(final List<DetectionResult> results) {
+    public void setResults(final List<Detection> results) {
         this.results = results;
         postInvalidate();
     }
 
-    public void setResults(final List<DetectionResult> results, long fps) {
+    public void setResults(final List<Detection> results, long fps) {
         this.fps = fps;
         this.results = results;
         postInvalidate();
@@ -104,8 +112,7 @@ public class OverlayView extends View {
         float right = Math.min(rect.right * sizeMultiplier, getWidth() - padding);
         float bottom = Math.min(rect.bottom * sizeMultiplier + offsetY, getHeight() - padding);
 
-        RectF newRect = new RectF(left, top, right, bottom);
-        return newRect;
+        return new RectF(left, top, right, bottom);
     }
 
 }

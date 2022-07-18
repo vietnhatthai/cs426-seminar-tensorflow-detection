@@ -22,9 +22,10 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.example.cs426_seminar_tensorflow_detection.customview.OverlayView;
-import com.example.cs426_seminar_tensorflow_detection.deepmodel.DetectionResult;
-import com.example.cs426_seminar_tensorflow_detection.deepmodel.MobileNetObjDetector;
 import com.example.cs426_seminar_tensorflow_detection.utils.ImageUtils;
+import com.example.cs426_seminar_tensorflow_detection.model.ObjectDetect;
+
+import org.tensorflow.lite.task.vision.detector.Detection;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -32,24 +33,22 @@ import java.util.Date;
 import java.util.List;
 
 public class RealTimeFragment extends Fragment implements OnImageAvailableListener {
+    private static final int PERMISSIONS_REQUEST = 1;
     private final String LOGGING_TAG = MainActivity.class.getName();
+    private final String MODEL_NAME = "voc2007.tflite";
+    private int MODEL_IMAGE_INPUT_SIZE = 300;
 
     private int previewWidth = 0;
     private int previewHeight = 0;
+    private long fps = 0;
     private Bitmap imageBitmapForModel;
     private Bitmap rgbBitmapForCameraImage;
     private boolean computing = false;
     private Matrix imageTransformMatrix;
-
     private OverlayView overlayView;
-
-    private MobileNetObjDetector objectDetector;
     private Runnable runInBackground;
 
-    private static final int PERMISSIONS_REQUEST = 1;
-
-    private long fps = 0;
-
+    private ObjectDetect objectDetect;
 
     public RealTimeFragment() {
 
@@ -103,20 +102,20 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
         }
 
         runInBackground = () -> {
-            Date currentTime = Calendar.getInstance().getTime();
-            List<DetectionResult> results;
             try {
-                results = objectDetector.detectObjects(imageBitmapForModel);
+                Date currentTime = Calendar.getInstance().getTime();
+                List<Detection> results = objectDetect.runObjectDetection(imageBitmapForModel);
                 overlayView.setResults(results, fps);
                 requestRender();
                 Date endTime = Calendar.getInstance().getTime();
                 // calc fps
                 long diff = endTime.getTime() - currentTime.getTime();
+                if (diff==0.0f) diff = 1;
                 fps = 1000 / diff;
                 Log.i(LOGGING_TAG, String.format("FPS: %d", fps));
             }
-            catch (Exception e) {
-                Log.e(LOGGING_TAG, e.getMessage());
+            catch (Exception ex) {
+                Log.e(LOGGING_TAG, ex.getMessage());
             }
             computing = false;
         };
@@ -150,7 +149,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
     protected void onPreviewSizeChosen(final Size previewSize, final int rotation) {
 
         try {
-            objectDetector = MobileNetObjDetector.create(requireActivity().getAssets());
+            objectDetect = new ObjectDetect(requireContext(), MODEL_NAME);
             Log.i(LOGGING_TAG, "Model Initiated successfully.");
             Toast.makeText(requireActivity().getApplicationContext(), "MobileNetObjDetector created", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
@@ -172,7 +171,6 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
         Log.i(LOGGING_TAG, "preview width: " + previewWidth);
         Log.i(LOGGING_TAG, "preview height: " + previewHeight);
         // create empty bitmap
-        int MODEL_IMAGE_INPUT_SIZE = 300;
         imageBitmapForModel = Bitmap.createBitmap(MODEL_IMAGE_INPUT_SIZE, MODEL_IMAGE_INPUT_SIZE, Bitmap.Config.ARGB_8888);
         rgbBitmapForCameraImage = Bitmap.createBitmap(previewWidth, previewHeight, Bitmap.Config.ARGB_8888);
 
@@ -217,8 +215,5 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (objectDetector != null) {
-            objectDetector.close();
-        }
     }
 }
