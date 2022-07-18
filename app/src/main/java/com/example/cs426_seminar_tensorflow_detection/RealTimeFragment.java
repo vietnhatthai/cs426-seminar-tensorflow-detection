@@ -13,7 +13,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
 import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
@@ -52,7 +51,6 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
 
     private long fps = 0;
 
-    Handler handler;
 
     public RealTimeFragment() {
 
@@ -62,21 +60,24 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(null);
         requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        handler = new Handler();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_real_time, container, false);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (hasPermission()) {
             setFragment();
         } else {
             requestPermission();
         }
-        return view;
     }
-
 
     @Override
     public void onImageAvailable(final ImageReader reader) {
@@ -104,26 +105,28 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
         }
 
         runInBackground = () -> {
-
             Date currentTime = Calendar.getInstance().getTime();
-            final List<DetectionResult> results = objectDetector.detectObjects(imageBitmapForModel);
-            Log.d("Results", "Length: " + results.size());
-            overlayView.setResults(results, fps);
-            requestRender();
-            Date endTime = Calendar.getInstance().getTime();
-            // calc fps
-            long diff = endTime.getTime() - currentTime.getTime();
-            fps = 1000 / diff;
-            Log.i(LOGGING_TAG, String.format("FPS: %d", fps));
-
+            List<DetectionResult> results = null;
+            try {
+                results = objectDetector.detectObjects(imageBitmapForModel);
+                overlayView.setResults(results, fps);
+                requestRender();
+                Date endTime = Calendar.getInstance().getTime();
+                // calc fps
+                long diff = endTime.getTime() - currentTime.getTime();
+                fps = 1000 / diff;
+                Log.i(LOGGING_TAG, String.format("FPS: %d", fps));
+            }
+            catch (Exception e) {
+                Log.e(LOGGING_TAG, e.getMessage());
+            }
             computing = false;
         };
 
         process();
     }
 
-    private void process()
-    {
+    private void process() {
         runInBackground.run();
     }
 
@@ -141,9 +144,9 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
                 this.onPreviewSizeChosen(size, rotation));
         cameraConnectionFragment.addImageAvailableListener(this);
 
-        getChildFragmentManager()
+        requireActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.container, cameraConnectionFragment, null)
+                .replace(R.id.container, cameraConnectionFragment)
                 .commit();
     }
 
@@ -156,7 +159,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
             objectDetector = MobileNetObjDetector.create(requireActivity().getAssets());
             Log.i(LOGGING_TAG, "Model Initiated successfully.");
             Toast.makeText(requireActivity().getApplicationContext(), "MobileNetObjDetector created", Toast.LENGTH_SHORT).show();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(requireActivity().getApplicationContext(), "MobileNetObjDetector could not be created", Toast.LENGTH_SHORT).show();
         }
@@ -180,7 +183,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
         rgbBitmapForCameraImage = Bitmap.createBitmap(previewWidth, previewHeight, Bitmap.Config.ARGB_8888);
 
         imageTransformMatrix = ImageUtils.getTransformationMatrix(previewWidth, previewHeight,
-                MODEL_IMAGE_INPUT_SIZE, MODEL_IMAGE_INPUT_SIZE, sensorOrientation,true);
+                MODEL_IMAGE_INPUT_SIZE, MODEL_IMAGE_INPUT_SIZE, sensorOrientation, true);
         imageTransformMatrix.invert(new Matrix());
     }
 

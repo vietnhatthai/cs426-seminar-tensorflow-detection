@@ -1,12 +1,9 @@
 package com.example.cs426_seminar_tensorflow_detection;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,12 +28,10 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_realtime:
                     // Toast.makeText(getApplicationContext(), "Realtime", Toast.LENGTH_SHORT).show();
-//                    getSupportFragmentManager()
-//                            .beginTransaction()
-//                            .add(R.id.frame_container, new RealTimeFragment())
-//                            .commit();
-                    MainCameraActivity activity = MainCameraActivity.getInstance();
-                    startActivity(new Intent(getApplicationContext(), activity.getClass()));
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .add(R.id.frame_container, new RealTimeFragment())
+                            .commit();
                     return true;
             }
             return false;

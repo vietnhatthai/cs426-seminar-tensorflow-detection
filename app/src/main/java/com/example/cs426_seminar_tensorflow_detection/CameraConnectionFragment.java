@@ -36,7 +36,6 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.cs426_seminar_tensorflow_detection.customview.AutoFitTextureView;
-import com.example.cs426_seminar_tensorflow_detection.utils.ErrorDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,12 +79,12 @@ public class CameraConnectionFragment extends Fragment {
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_real_time, container, false);
+        return inflater.inflate(R.layout.fragment_camera_connection, container, false);
     }
 
     @Override
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
-        textureView = (AutoFitTextureView) view.findViewById(R.id.texture);
+        textureView = view.findViewById(R.id.texture);
     }
 
     @Override

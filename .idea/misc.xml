@@ -5,8 +5,11 @@
       <map>
         <entry key="..\:/AndroidStudio/cs426-seminar-tensorflow-detection/app/src/main/res/layout/activity_main.xml" value="0.17592592592592593" />
         <entry key="..\:/AndroidStudio/cs426-seminar-tensorflow-detection/app/src/main/res/layout/camera_connection_fragment.xml" value="0.15447154471544716" />
+        <entry key="..\:/AndroidStudio/cs426-seminar-tensorflow-detection/app/src/main/res/layout/fragment_camera_connection.xml" value="0.1357142857142857" />
         <entry key="..\:/AndroidStudio/cs426-seminar-tensorflow-detection/app/src/main/res/layout/fragment_real_time.xml" value="0.15447154471544716" />
         <entry key="..\:/AndroidStudio/cs426-seminar-tensorflow-detection/app/src/main/res/layout/fragment_samples.xml" value="0.22780797101449277" />
+        <entry key="..\:/AndroidStudio/cs426-seminar-tensorflow-detection/app/src/main/res/layout/new_container.xml" value="0.13620071684587814" />
+        <entry key="..\:/AndroidStudio/cs426-seminar-tensorflow-detection/app/src/main/res/layout/test_new_container.xml" value="0.1357142857142857" />
         <entry key="..\:/AndroidStudio/cs426-seminar-tensorflow-detection/app/src/main/res/menu/navigation.xml" value="0.259375" />
       </map>
     </option>

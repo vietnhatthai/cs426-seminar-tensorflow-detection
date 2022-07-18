@@ -17,8 +17,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cs426seminartensorflowdetection"
         tools:targetApi="31">
-        <activity android:name="MainCameraActivity"
-            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">

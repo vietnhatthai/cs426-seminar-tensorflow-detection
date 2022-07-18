@@ -52,6 +52,7 @@ public class OverlayView extends View {
                 if (results.get(i).getConfidence() > 0.5) {
                     RectF box = reCalcSize(results.get(i).getLocation());
                     String title = results.get(i).getTitle() + String.format(" %2.2f", results.get(i).getConfidence()*100) + "%";
+                    Log.d("OverlayView", "title: " + title);
                     paint.setColor(Color.RED);
                     paint.setStyle(Paint.Style.STROKE);
                     canvas.drawRect(box, paint);
@@ -62,7 +63,7 @@ public class OverlayView extends View {
             }
         }
         if (fps > 0) {
-            Log.d("Draw FPS", String.format("%d", 1000 / fps));
+            Log.d("FPS", String.format("%d", 1000 / fps));
             paint.setColor(Color.RED);
             paint.setStyle(Paint.Style.FILL_AND_STROKE);
             canvas.drawText(String.format("%d FPS", fps), 50, 100, paint);

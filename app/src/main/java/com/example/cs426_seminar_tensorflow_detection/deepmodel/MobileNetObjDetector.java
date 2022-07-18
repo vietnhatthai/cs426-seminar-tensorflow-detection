@@ -108,7 +108,7 @@ public class MobileNetObjDetector {
         tfLite.close();
     }
 
-    public List<DetectionResult> detectObjects(final Bitmap bitmap) {
+    public List<DetectionResult> detectObjects(final Bitmap bitmap) throws IOException{
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 
         imgData.rewind();
