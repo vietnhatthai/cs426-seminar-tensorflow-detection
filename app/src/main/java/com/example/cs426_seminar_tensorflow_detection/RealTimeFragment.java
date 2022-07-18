@@ -140,8 +140,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
 
     protected void setFragment() {
         CameraConnectionFragment cameraConnectionFragment = new CameraConnectionFragment();
-        cameraConnectionFragment.addConnectionListener((final Size size, final int rotation) ->
-                this.onPreviewSizeChosen(size, rotation));
+        cameraConnectionFragment.addConnectionListener(this::onPreviewSizeChosen);
         cameraConnectionFragment.addImageAvailableListener(this);
 
         requireActivity().getSupportFragmentManager()

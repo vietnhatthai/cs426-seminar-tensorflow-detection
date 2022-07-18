@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
                     // Toast.makeText(getApplicationContext(), "Realtime", Toast.LENGTH_SHORT).show();
                     getSupportFragmentManager()
                             .beginTransaction()
-                            .add(R.id.frame_container, new RealTimeFragment())
+                            .replace(R.id.frame_container, new RealTimeFragment())
                             .commit();
                     return true;
             }
