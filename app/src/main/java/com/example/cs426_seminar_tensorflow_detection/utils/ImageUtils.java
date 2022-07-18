@@ -1,6 +1,5 @@
 package com.example.cs426_seminar_tensorflow_detection.utils;
 
-import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.media.Image;
 
