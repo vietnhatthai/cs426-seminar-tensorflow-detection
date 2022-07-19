@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import org.tensorflow.lite.support.image.TensorImage;
+import org.tensorflow.lite.task.core.BaseOptions;
 import org.tensorflow.lite.task.vision.detector.Detection;
 import org.tensorflow.lite.task.vision.detector.ObjectDetector;
 
@@ -25,6 +26,7 @@ public class ObjectDetect {
     private void load_model(Context context, String model_name) throws IOException {
         // initialize the detector object
         ObjectDetector.ObjectDetectorOptions options = ObjectDetector.ObjectDetectorOptions.builder()
+                .setBaseOptions(BaseOptions.builder().useGpu().build()) // use GPU
                 .setMaxResults(10)          // set the maximum number of results to return
                 .setScoreThreshold(0.35f)   // set the minimum score threshold for the results to be returned
                 .build();                   // build the options

@@ -20,7 +20,7 @@ import java.util.List;
 
 
 public class OverlayView extends View {
-    private static int INPUT_SIZE = 300;
+    private static int INPUT_SIZE = 650;
 
     private final Paint pen;
     private final List<DrawCallback> callbacks = new LinkedList();

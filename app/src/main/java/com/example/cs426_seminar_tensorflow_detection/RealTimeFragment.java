@@ -36,7 +36,7 @@ public class RealTimeFragment extends Fragment implements OnImageAvailableListen
     private static final int PERMISSIONS_REQUEST = 1;
     private final String LOGGING_TAG = MainActivity.class.getName();
     private final String MODEL_NAME = "voc2007.tflite";
-    private int MODEL_IMAGE_INPUT_SIZE = 300;
+    private int MODEL_IMAGE_INPUT_SIZE = 650;
 
     private int previewWidth = 0;
     private int previewHeight = 0;
